@@ -62,41 +62,27 @@ function renderYAxis(newYScale, yAxis) {
     return xAxis;
   }
 
-  function renderCircleX(circlesGroup, newXScale, chosenXAxis) {
+  function renderCircles(circlesGroup, newXScale, chosenXAxis, newYScale, chosenYAxis) {
 
     circlesGroup.transition()
       .duration(1000)
-      .attr("cx", d => newXScale(d[chosenXAxis]));
-  
-    return circlesGroup;
-  }
-  function renderCircleY(circlesGroup, newYScale, chosenYAxis) {
-
-    circlesGroup.transition()
-      .duration(1000)
+      .attr("cx", d => newXScale(d[chosenXAxis]))
       .attr("cy", d => newYScale(d[chosenYAxis]));
-  
     return circlesGroup;
   }
+
   
   function updateToolTip(chosenXAxis, circlesGroup) {
-
-    var label;
-  
-    if (chosenXAxis === "age") {
-      label = "Age(Median):";
-    }
-    else if(chosenXAxis === "poverty") {
-      label = "In Poverty (%):";
-    }
+    chosenXAxis="age"
+   
   
     var toolTip = d3.tip()
-      .attr("class", "tooltip")
+      .attr("class", "d3-tip")
       .offset([80, -60])
       .html(function(d) {
         return (`${d.state}<br>Age:${d.age}<br>Smokes: ${d.smokes}`);
       });
-  
+  console.log(toolTip);
     circlesGroup.call(toolTip);
   
     circlesGroup.on("mouseover", function(data) {
@@ -111,7 +97,6 @@ function renderYAxis(newYScale, yAxis) {
 
   d3.csv("data.csv").then(function(newsData, err){
       if (err) throw err;
-
       newsData.forEach(function(data){
           data.smokes= +data.smokes;
           data.poverty= +data.poverty;
@@ -119,14 +104,9 @@ function renderYAxis(newYScale, yAxis) {
           data.income= +data.income;
           data.healthcare= +data.healthcare;
           data.obesity= +data.obesity;
-          stateAbbr=data.abbr;
       });
-      var xLinearScale=d3.scaleLinear()
-          .domain(d3.extent(newsData, d=>d.age))
-          .range([0, width]);
-      var yLinearScale=d3.scaleLinear()
-          .domain(d3.extent(newsData, d=>d.smokes))
-          .range([height, 0]);
+      var xLinearScale=xScale(newsData, "age");
+      var yLinearScale=yScale(newsData, "smokes");
       var bottomAxis=d3.axisBottom(xLinearScale);
       var leftAxis=d3.axisLeft(yLinearScale);
       chartGroup.append("g")
@@ -150,13 +130,23 @@ function renderYAxis(newYScale, yAxis) {
           .attr("cy", d => yLinearScale(d.smokes))
           .attr("r", 20)
           .attr("fill", "lightblue")
-          .attr("opacity", ".5")
+          .attr("opacity", ".55")
+        
+        chartGroup.selectAll(".stateText")
+          .data(newsData)
+          .enter()
+          .append("text")
+          .classed("stateText", true)
+          .attr("x", d=>xLinearScale(d.age))
+          .attr("y", d=>yLinearScale(d.smokes))
+          .attr("dy", 4)
+          .text(function(d){return d.abbr});
 
      
       
           
       var circlesGroup=updateToolTip(chosenXAxis, circlesGroup);
-
+      
     
 
     }).catch(function(error) {
