@@ -78,18 +78,18 @@ function renderYAxis(newYScale, yAxis) {
   
     var toolTip = d3.tip()
       .attr("class", "d3-tip")
-      .offset([80, -60])
+      .offset([70, -40])
       .html(function(d) {
-        return (`${d.state}<br>Age:${d.age}<br>Smokes: ${d.smokes}`);
+        return (`${d.state}<br>Age: ${d.age}<br>Smokes: ${d.smokes}`);
       });
-  console.log(toolTip);
+  
     circlesGroup.call(toolTip);
   
     circlesGroup.on("mouseover", function(data) {
-      toolTip.show(data);
+      toolTip.show(data,this);
     })
       .on("mouseout", function(data, index) {
-        toolTip.hide(data);
+        toolTip.hide(data, this);
       });
   
     return circlesGroup;
