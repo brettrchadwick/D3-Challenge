@@ -24,7 +24,7 @@ var chosenYAxis="smokes"
 
 function yScale(newsData, chosenYAxis) {
   var yLinearScale = d3.scaleLinear()
-    .domain([d3.min(newsData, d => d[chosenYAxis]) ,
+    .domain([d3.min(newsData, d => (d[chosenYAxis]-1)) ,
       d3.max(newsData, d => d[chosenYAxis]) 
     ])
     .range([height, 0]);
@@ -35,7 +35,7 @@ function yScale(newsData, chosenYAxis) {
 
 function xScale(newsData, chosenXAxis) {
     var xLinearScale = d3.scaleLinear()
-      .domain([d3.min(newsData, d => d[chosenXAxis]) ,
+      .domain([d3.min(newsData, d => (d[chosenXAxis]-1)) ,
         d3.max(newsData, d => d[chosenXAxis]) 
       ])
       .range([0, width]);
